@@ -13,11 +13,7 @@ namespace SimpleMongoDB;
  */
 class SimpleMongoClass {
     
-    private $host = 'localhost';
-    private $port = '27017';
-    
     private $isConnect = true;
-    
     private $MongoDBClient;
     
     /**
@@ -30,7 +26,7 @@ class SimpleMongoClass {
         try{
             
             /* @var $MongoDBClient \MongoDB\Client */
-            $MongoDBClient = new \MongoDB\Client("mongodb://".$this->host.":".$this->port,[],[
+            $MongoDBClient = new \MongoDB\Client("mongodb://".$server.":".$port,[],[
                 'typeMap' => [
                     'root' => 'array', 
                     'document' => 'array', 
