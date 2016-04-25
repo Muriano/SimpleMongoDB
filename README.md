@@ -11,7 +11,7 @@ Install mongodb driver, is required for mongodb/mongodb
 
  try {
  
-    $SimpleMongoDb = new \SimpleMongoDB\SimpleMongoClass($server);
+    $SimpleMongoDb = new \SimpleMongoDB\SimpleMongoClass('localhost');
     
     $SimpleMongoDb->setCollection('test', 'local');
     
