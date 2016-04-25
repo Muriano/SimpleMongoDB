@@ -1,13 +1,17 @@
 # SimpleMongoDB
 SimpleMongoDB, simple handler to MongoDB PHP5/7
 
+# Install composer
+"require": {
+  "macrotux/simplemongodb": "dev-master",
+ }
 
-Install mongodb driver, is required for mongodb/mongodb
-
+# Install required 
+* Mongodb driver, is required for mongodb/mongodb
 * sudo pecl install mongodb
 * Edit php.ini add line "extension=mongodb.so"
 
-#Use examples
+# Use examples
 
  try {
  
