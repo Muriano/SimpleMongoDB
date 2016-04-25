@@ -42,10 +42,10 @@ class SimpleMongoClass {
             $this->MongoDBClient = $MongoDBClient;
         } catch (\MongoDB\Driver\Exception\ConnectionTimeoutException $e) {
             $this->isConnect = false;
-            throw new \Exception('Error no connect to data base.');
+            throw new \Exception('Error no connect to data base: '.$e->getMessage());
         } catch (\Exception $ex) {            
             $this->isConnect = false;
-            throw new \Exception('Error no connect to data base.');
+            throw new \Exception('Error no connect to data base: '.$ex->getMessage());
         }
         
     }   
@@ -91,7 +91,7 @@ class SimpleMongoClass {
      * @param array $data
      * @return integer  Count update documents
      */
-    public function updateByMongoId $colectionName, $mongoIdStr, array $data){        
+    public function updateByMongoId ($colectionName, $mongoIdStr, array $data){        
         $MongoId = new \MongoDB\BSON\ObjectID($mongoIdStr);
         /* var $InsertOneResult \MongoDB\UpdateResult */
         $UpdateResult = $this->getColection($colectionName)->updateOne(['_id'=>$MongoId], ['$set'=>$data]);        
