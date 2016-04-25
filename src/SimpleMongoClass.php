@@ -34,7 +34,7 @@ class SimpleMongoClass {
                 ]
             ]);
             /* var $info \MongoDB\Model\DatabaseInfoLegacyIterator */
-            $info = $MongoDBClient->listDatabases();
+            $MongoDBClient->listDatabases(); // info
             $this->MongoDBClient = $MongoDBClient;
         } catch (\MongoDB\Driver\Exception\ConnectionTimeoutException $e) {
             $this->isConnect = false;
