@@ -25,7 +25,7 @@ class SimpleMongoClass {
      * @param string $server    Server hostname
      * @param string $port      Port
      */
-    function __construct (string $server = 'localhost', string $port = '27017') {
+    function __construct ($server = 'localhost', $port = '27017') {
                
         try{
             
@@ -72,7 +72,7 @@ class SimpleMongoClass {
      * @param string $database
      * @return \MongoDB\Collection
      */
-    public function getColection(string $name, string $database = 'local') {
+    public function getColection($name, $database = 'local') {
         /* @var $Colection \MongoDB\Collection */
         $Colection = $this->getConnect()->selectCollection($database, $name);
         return $Colection;
@@ -91,7 +91,7 @@ class SimpleMongoClass {
      * @param array $data
      * @return integer  Count update documents
      */
-    public function updateByMongoId(string $colectionName, string $mongoIdStr, array $data){        
+    public function updateByMongoId $colectionName, $mongoIdStr, array $data){        
         $MongoId = new \MongoDB\BSON\ObjectID($mongoIdStr);
         /* var $InsertOneResult \MongoDB\UpdateResult */
         $UpdateResult = $this->getColection($colectionName)->updateOne(['_id'=>$MongoId], ['$set'=>$data]);        
@@ -117,7 +117,7 @@ class SimpleMongoClass {
      * @param string $mongoIdStr
      * @return array
      */
-    public function findByMongoId(string $colectionName, string $mongoIdStr){
+    public function findByMongoId($colectionName, $mongoIdStr){
         $MongoId = new \MongoDB\BSON\ObjectID($mongoIdStr);
         /* var $InsertOneResult \MongoDB\UpdateResult */
         return $this->getColection($colectionName)->findOne(['_id'=>$MongoId]);
@@ -129,7 +129,7 @@ class SimpleMongoClass {
      * @param \MongoDB\BSON\ObjectID $MongoId
      * @return array
      */
-    public function find(string $colectionName, \MongoDB\BSON\ObjectID $MongoId){        
+    public function find($colectionName, \MongoDB\BSON\ObjectID $MongoId){        
         return $this->getColection($colectionName)->findOne(['_id'=>$MongoId]);        
     }
     
