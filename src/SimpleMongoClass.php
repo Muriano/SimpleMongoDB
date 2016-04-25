@@ -9,7 +9,7 @@ namespace SimpleMongoDB;
 /**
  * Description of SimpleMongoDb
  *
- * @author macro
+ * @author Javier Feria <info@javierferia.com>
  */
 class SimpleMongoClass {
     
@@ -29,6 +29,7 @@ class SimpleMongoClass {
      * Construct
      * @param string $server    Server hostname
      * @param string $port      Port
+     * @throws Exceptions\ConnectionFailException
      */
     function __construct ($server = 'localhost', $port = self::PORT) {
                
@@ -46,10 +47,10 @@ class SimpleMongoClass {
             $this->MongoDBClient = $MongoDBClient;
         } catch (\MongoDB\Driver\Exception\ConnectionTimeoutException $e) {
             $this->isConnect = false;
-            throw new \Exception('Error no connect to data base: '.$e->getMessage());
+            throw new Exceptions\ConnectionFailException('Error no connect to data base: '.$e->getMessage());
         } catch (\Exception $ex) {            
             $this->isConnect = false;
-            throw new \Exception('Error no connect to data base: '.$ex->getMessage());
+            throw new Exceptions\ConnectionFailException('Error no connect to data base: '.$ex->getMessage());
         }
         
     }   
@@ -73,8 +74,12 @@ class SimpleMongoClass {
     /**
      * Return MongoCollection
      * @return \MongoDB\Collection
+     * @throws Exceptions\NoCollectionExecption
      */
     public function getCollection() {        
+        if ( !$this->Collection ) {
+            throw new \SimpleMongoDB\Exceptions\NoCollectionExecption('No Collection found, type setCollection()');
+        } // if ( !$this->Collection )
         return $this->Collection;
     }
     
@@ -84,7 +89,7 @@ class SimpleMongoClass {
      * @param string $database
      * @return SimpleMongoClass
      */
-    public function setCollection($name, $database = 'local'){
+    public function setCollection($name, $database = 'local'){        
         /* @var $Collection \MongoDB\Collection */
         $this->Collection = $this->getConnect()->selectCollection($database, $name);
         return $this;
@@ -94,6 +99,7 @@ class SimpleMongoClass {
      * Update documents by String Id
      * @param array $data
      * @return integer  Count update documents
+     * @throws Exceptions\NoCollectionExecption
      */
     public function insert(array $data){
         unset($data['_id']); // Cleaning _id no allowe
@@ -107,6 +113,7 @@ class SimpleMongoClass {
      * @param string $mongoIdStr
      * @param array $data
      * @return integer  Count update documents
+     * @throws Exceptions\NoCollectionExecption
      */
     public function updateByMongoId ($mongoIdStr, array $data){        
         $MongoId = new \MongoDB\BSON\ObjectID($mongoIdStr);
@@ -120,6 +127,7 @@ class SimpleMongoClass {
      * @param array $filter
      * @param array $data
      * @return integer  Count update documents
+     * @throws Exceptions\NoCollectionExecption
      */
     public function update (array $filter, array $data){
         unset($data['_id']); // Cleaning _id no allowe
@@ -132,6 +140,7 @@ class SimpleMongoClass {
      * @param \MongoDB\BSON\ObjectID $MongoId
      * @param array $data
      * @return integer  Count update documents
+     * @throws Exceptions\NoCollectionExecption
      */
     public function updateByObjectID(\MongoDB\BSON\ObjectID $MongoId, array $data){       
         /* var $UpdateResult \MongoDB\UpdateResult */
@@ -143,6 +152,7 @@ class SimpleMongoClass {
      * Find
      * @param string $mongoIdStr
      * @return array
+     * @throws Exceptions\NoCollectionExecption
      */
     public function findByMongoId($mongoIdStr){
         $MongoId = new \MongoDB\BSON\ObjectID($mongoIdStr);
@@ -155,6 +165,7 @@ class SimpleMongoClass {
      * @param string $collectionName
      * @param \MongoDB\BSON\ObjectID $MongoId
      * @return array
+     * @throws Exceptions\NoCollectionExecption
      */
     public function findByObjectID(\MongoDB\BSON\ObjectID $MongoId){        
         return $this->getCollection()->findOne(['_id'=>$MongoId]);        
@@ -168,6 +179,7 @@ class SimpleMongoClass {
      * Delete
      * @param array $filter
      * @return integer  count remove
+     * @throws Exceptions\NoCollectionExecption
      */
     public function remove(array $filter){
         return $this->getCollection()->deleteOne($filter)->getDeletedCount();        
