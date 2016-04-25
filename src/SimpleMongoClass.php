@@ -13,28 +13,36 @@ namespace SimpleMongoDB;
  */
 class SimpleMongoClass {
     
-    private $isConnect = true;
+    const PROTOCOL = 'mongodb://';
+    const PORT = '27017';
+    
+    private $isConnect = true;    
     private $MongoDBClient;
+    
+    /**
+     * Current Collection
+     * @var \MongoDB\Collection 
+     */
+    private $Collection;
     
     /**
      * Construct
      * @param string $server    Server hostname
      * @param string $port      Port
      */
-    function __construct ($server = 'localhost', $port = '27017') {
+    function __construct ($server = 'localhost', $port = self::PORT) {
                
         try{
             
             /* @var $MongoDBClient \MongoDB\Client */
-            $MongoDBClient = new \MongoDB\Client("mongodb://".$server.":".$port,[],[
+            $MongoDBClient = new \MongoDB\Client(self::PROTOCOL.$server.":".$port,[],[
                 'typeMap' => [
                     'root' => 'array', 
                     'document' => 'array', 
                     'array' => 'array'
                 ]
             ]);
-            /* var $info \MongoDB\Model\DatabaseInfoLegacyIterator */
-            $MongoDBClient->listDatabases(); // info
+            $MongoDBClient->listDatabases(); //info
             $this->MongoDBClient = $MongoDBClient;
         } catch (\MongoDB\Driver\Exception\ConnectionTimeoutException $e) {
             $this->isConnect = false;
@@ -63,70 +71,106 @@ class SimpleMongoClass {
     }
     
     /**
-     * Return MongoColection
-     * @param string $name
-     * @param string $database
+     * Return MongoCollection
      * @return \MongoDB\Collection
      */
-    public function getColection($name, $database = 'local') {
-        /* @var $Colection \MongoDB\Collection */
-        $Colection = $this->getConnect()->selectCollection($database, $name);
-        return $Colection;
+    public function getCollection() {        
+        return $this->Collection;
     }
     
-    public function insert(string $colectionName, array $data){
+    /**
+     * Set MongoCollection
+     * @param string $name
+     * @param string $database
+     * @return SimpleMongoClass
+     */
+    public function setCollection($name, $database = 'local'){
+        /* @var $Collection \MongoDB\Collection */
+        $this->Collection = $this->getConnect()->selectCollection($database, $name);
+        return $this;
+    }
+    
+    /**
+     * Update documents by String Id
+     * @param array $data
+     * @return integer  Count update documents
+     */
+    public function insert(array $data){
+        unset($data['_id']); // Cleaning _id no allowe
         /* var $InsertOneResult \MongoDB\InsertOneResult */
-        $InsertOneResult = $this->getColection($colectionName)->insertOne($data);
+        $InsertOneResult = $this->getCollection()->insertOne($data);
         return $InsertOneResult->getInsertedId();
     }
     
     /**
      * Update documents by String Id
-     * @param string $colectionName
      * @param string $mongoIdStr
      * @param array $data
      * @return integer  Count update documents
      */
-    public function updateByMongoId ($colectionName, $mongoIdStr, array $data){        
+    public function updateByMongoId ($mongoIdStr, array $data){        
         $MongoId = new \MongoDB\BSON\ObjectID($mongoIdStr);
-        /* var $InsertOneResult \MongoDB\UpdateResult */
-        $UpdateResult = $this->getColection($colectionName)->updateOne(['_id'=>$MongoId], ['$set'=>$data]);        
+        /* var $UpdateResult \MongoDB\UpdateResult */
+        $UpdateResult = $this->getCollection()->updateOne(['_id'=>$MongoId], ['$set'=>$data]);
+        return $UpdateResult->getModifiedCount();
+    }
+    
+    /**
+     * Update
+     * @param array $filter
+     * @param array $data
+     * @return integer  Count update documents
+     */
+    public function update (array $filter, array $data){
+        unset($data['_id']); // Cleaning _id no allowe
+        $UpdateResult = $this->getCollection()->updateOne($filter, ['$set'=>$data]);
         return $UpdateResult->getModifiedCount();
     }
     
     /**
      * Update documents
-     * @param string $colectionName
      * @param \MongoDB\BSON\ObjectID $MongoId
      * @param array $data
      * @return integer  Count update documents
      */
-    public function update(string $colectionName, \MongoDB\BSON\ObjectID $MongoId, array $data){       
-        /* var $InsertOneResult \MongoDB\UpdateResult */
-        $UpdateResult = $this->getColection($colectionName)->updateOne(['_id'=>$MongoId], ['$set'=>$data]);        
+    public function updateByObjectID(\MongoDB\BSON\ObjectID $MongoId, array $data){       
+        /* var $UpdateResult \MongoDB\UpdateResult */
+        $UpdateResult = $this->getCollection()->updateOne(['_id'=>$MongoId], ['$set'=>$data]);        
         return $UpdateResult->getModifiedCount();
     }
     
     /**
      * Find
-     * @param string $colectionName
      * @param string $mongoIdStr
      * @return array
      */
-    public function findByMongoId($colectionName, $mongoIdStr){
+    public function findByMongoId($mongoIdStr){
         $MongoId = new \MongoDB\BSON\ObjectID($mongoIdStr);
         /* var $InsertOneResult \MongoDB\UpdateResult */
-        return $this->getColection($colectionName)->findOne(['_id'=>$MongoId]);
+        return $this->getCollection()->findOne(['_id'=>$MongoId]);
     }
     
     /**
      * Find 
-     * @param string $colectionName
+     * @param string $collectionName
      * @param \MongoDB\BSON\ObjectID $MongoId
      * @return array
      */
-    public function find($colectionName, \MongoDB\BSON\ObjectID $MongoId){        
-        return $this->getColection($colectionName)->findOne(['_id'=>$MongoId]);        
+    public function findByObjectID(\MongoDB\BSON\ObjectID $MongoId){        
+        return $this->getCollection()->findOne(['_id'=>$MongoId]);        
+    }
+    
+    public function find(array $filter){
+        return $this->getCollection()->findOne($filter);
+    }
+    
+    /**
+     * Delete
+     * @param array $filter
+     * @return integer  count remove
+     */
+    public function remove(array $filter){
+        return $this->getCollection()->deleteOne($filter)->getDeletedCount();        
     }
     
 }
