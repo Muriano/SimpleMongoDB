@@ -1,5 +1,5 @@
 # SimpleMongoDB
-SimpleMongoDB, simple handler to MongoDB PHP7
+SimpleMongoDB, simple handler to MongoDB PHP5/7
 
 
 Install mongodb driver, is required for mongodb/mongodb
