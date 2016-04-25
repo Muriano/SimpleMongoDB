@@ -10,8 +10,11 @@ Install mongodb driver, is required for mongodb/mongodb
 #Use examples
 
  try {
+ 
     $SimpleMongoDb = new \SimpleMongoDB\SimpleMongoClass($server);
+    
     $SimpleMongoDb->setCollection('test', 'local');
+    
     
     // Find
     $SimpleMongoDb->getSimpleMongoDb()->find(['_id' => '123465798']); // return array
