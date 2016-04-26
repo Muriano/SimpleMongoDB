@@ -35,7 +35,7 @@ SimpleMongoDB, simple handler to MongoDB PHP5/7
    
  } // try
  
- ## License
+# License
 
 The MIT License (MIT)   
 Copyright (c) 2016   
