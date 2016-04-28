@@ -185,4 +185,14 @@ class SimpleMongoClass {
         return $this->getCollection()->deleteOne($filter)->getDeletedCount();        
     }
     
+    /**
+     * Delete by string _id
+     * @param string $mongoIdStr
+     * @return integer  count remove
+     */
+    public function removeByMongoId($mongoIdStr){
+        $MongoId = new \MongoDB\BSON\ObjectID($mongoIdStr);
+        return $this->getCollection()->deleteOne($MongoId)->getDeletedCount();
+    }
+    
 }
