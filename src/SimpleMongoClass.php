@@ -175,6 +175,10 @@ class SimpleMongoClass {
         return $this->getCollection()->findOne($filter);
     }
     
+    public function findBy(array $filter, array $fields = []){
+        return $this->getCollection()->find($filter, $fields);
+    }
+    
     /**
      * Delete
      * @param array $filter
